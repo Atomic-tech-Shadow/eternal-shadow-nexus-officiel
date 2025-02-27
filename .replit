@@ -1,0 +1,45 @@
+modules = ["nodejs-20:v8-20230920-bd784b9", "web", "postgresql-16"]
+run = "npm run dev"
+hidden = [".config", "package-lock.json", ".git", "generated-icon.png", "node_modules", "dist"]
+
+[nix]
+channel = "stable-23_05"
+
+[objectStorage]
+defaultBucketID = "replit-objstore-2671be20-ff2f-4b45-b882-bc823dc5b905"
+
+[deployment]
+deploymentTarget = "cloudrun"
+build = ["npm", "run", "build"]
+run = ["npm", "run", "start"]
+
+[[ports]]
+localPort = 5000
+externalPort = 80
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Start application"
+
+[[workflows.workflow]]
+name = "Start application"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev"
+waitForPort = 5000
