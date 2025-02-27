@@ -9,7 +9,7 @@ const server = createServer(app);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-setupAuth(app); // Intégrer Firebase Auth
+setupAuth(app);
 
 setupWebSocket(server, app);
 
