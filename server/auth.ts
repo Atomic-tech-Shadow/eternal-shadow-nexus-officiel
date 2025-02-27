@@ -41,4 +41,4 @@ export function setupAuth(app) {
   });
 
   console.log("✅ Authentication setup with Firebase Auth");
-}
+          }
