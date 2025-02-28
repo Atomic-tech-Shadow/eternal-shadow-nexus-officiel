@@ -2,7 +2,11 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "./hooks/use-auth";
-import { Switch, Route } from "wouter";
+import { useRoutes } from "wouter";
+import { useNotifications } from "./hooks/use-notifications";
+import ProtectedRoute from "./lib/protected-route";
+
+// Importation des pages
 import HomePage from "@/pages/home-page";
 import AuthPage from "@/pages/auth-page";
 import ProfilePage from "@/pages/profile-page";
@@ -12,26 +16,25 @@ import ProjectsPage from "@/pages/projects-page";
 import AnimePage from "@/pages/anime-page";
 import AdminPage from "@/pages/admin-page";
 import NotFound from "@/pages/not-found";
-import { ProtectedRoute } from "./lib/protected-route";
-import { useNotifications } from "./hooks/use-notifications";
 
 function Router() {
-  // Ajouter le hook useNotifications ici pour activer les notifications en temps réel
+  // Activer les notifications en temps réel
   useNotifications();
 
-  return (
-    <Switch>
-      <Route path="/auth" component={AuthPage} />
-      <ProtectedRoute path="/" component={HomePage} />
-      <ProtectedRoute path="/profile" component={ProfilePage} />
-      <ProtectedRoute path="/groups" component={GroupsPage} />
-      <ProtectedRoute path="/badges" component={BadgesPage} />
-      <ProtectedRoute path="/projects" component={ProjectsPage} />
-      <ProtectedRoute path="/anime" component={AnimePage} />
-      <ProtectedRoute path="/admin" component={AdminPage} />
-      <Route component={NotFound} />
-    </Switch>
-  );
+  // Définition des routes avec `useRoutes`
+  const routes = useRoutes([
+    { path: "/auth", component: AuthPage },
+    { path: "/", component: () => <ProtectedRoute component={HomePage} /> },
+    { path: "/profile", component: () => <ProtectedRoute component={ProfilePage} /> },
+    { path: "/groups", component: () => <ProtectedRoute component={GroupsPage} /> },
+    { path: "/badges", component: () => <ProtectedRoute component={BadgesPage} /> },
+    { path: "/projects", component: () => <ProtectedRoute component={ProjectsPage} /> },
+    { path: "/anime", component: () => <ProtectedRoute component={AnimePage} /> },
+    { path: "/admin", component: () => <ProtectedRoute component={AdminPage} /> },
+    { path: "*", component: NotFound }, // Gère toutes les routes non définies
+  ]);
+
+  return routes;
 }
 
 function App() {
