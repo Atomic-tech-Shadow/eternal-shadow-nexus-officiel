@@ -21,10 +21,11 @@ const config: Config = {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
         },
+        border: "hsl(var(--border))", // Ajout de la couleur border
       },
     },
   },
-  plugins: [require("tailwindcss-animate")], // Vérifie que le plugin est bien installé
+  plugins: [require("tailwindcss-animate")],
 };
 
 export default config;
