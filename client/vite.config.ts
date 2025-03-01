@@ -33,5 +33,14 @@ export default async () => {
       outDir: path.resolve(__dirname, "client", "dist"), // Utilisation de "client/dist" pour la sortie
       emptyOutDir: true,
     },
+    server: {
+      proxy: {
+        "/api": {
+          target: "https://eternal-shadow-nexus-officiel-1.onrender.com",  // URL du backend
+          changeOrigin: true,
+          secure: false,
+        },
+      },
+    },
   });
 };
