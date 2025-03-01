@@ -2,9 +2,9 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "./hooks/use-auth";
-import { useRoutes } from "wouter";
 import { useNotifications } from "./hooks/use-notifications";
 import ProtectedRoute from "./lib/protected-route";
+import { Route, Switch } from "wouter"; // Remplacement de useRoutes
 
 // Importation des pages
 import HomePage from "@/pages/home-page";
@@ -21,20 +21,19 @@ function Router() {
   // Activer les notifications en temps réel
   useNotifications();
 
-  // Définition des routes avec `useRoutes`
-  const routes = useRoutes([
-    { path: "/auth", component: AuthPage },
-    { path: "/", component: () => <ProtectedRoute component={HomePage} /> },
-    { path: "/profile", component: () => <ProtectedRoute component={ProfilePage} /> },
-    { path: "/groups", component: () => <ProtectedRoute component={GroupsPage} /> },
-    { path: "/badges", component: () => <ProtectedRoute component={BadgesPage} /> },
-    { path: "/projects", component: () => <ProtectedRoute component={ProjectsPage} /> },
-    { path: "/anime", component: () => <ProtectedRoute component={AnimePage} /> },
-    { path: "/admin", component: () => <ProtectedRoute component={AdminPage} /> },
-    { path: "*", component: NotFound }, // Gère toutes les routes non définies
-  ]);
-
-  return routes;
+  return (
+    <Switch>
+      <Route path="/auth" component={AuthPage} />
+      <Route path="/" component={() => <ProtectedRoute component={HomePage} />} />
+      <Route path="/profile" component={() => <ProtectedRoute component={ProfilePage} />} />
+      <Route path="/groups" component={() => <ProtectedRoute component={GroupsPage} />} />
+      <Route path="/badges" component={() => <ProtectedRoute component={BadgesPage} />} />
+      <Route path="/projects" component={() => <ProtectedRoute component={ProjectsPage} />} />
+      <Route path="/anime" component={() => <ProtectedRoute component={AnimePage} />} />
+      <Route path="/admin" component={() => <ProtectedRoute component={AdminPage} />} />
+      <Route component={NotFound} /> {/* Route par défaut pour les 404 */}
+    </Switch>
+  );
 }
 
 function App() {
