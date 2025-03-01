@@ -24,7 +24,7 @@ export default async () => {
     plugins,
     resolve: {
       alias: {
-        "@": path.resolve(__dirname, "src"), // Correction du chemin
+        "@": path.resolve(__dirname, "src"),
         "@shared": path.resolve(__dirname, "shared"),
       },
     },
@@ -32,14 +32,14 @@ export default async () => {
     server: {
       proxy: {
         "/api": {
-          target: "https://eternal-shadow-nexus-officiel.onrender.com", // Remplace par l'URL de ton backend
+          target: "https://eternal-shadow-nexus-officiel.onrender.com", // URL du backend
           changeOrigin: true,
           secure: false,
         },
       },
     },
     build: {
-      outDir: path.resolve(__dirname, "client", "dist"), // Définit le dossier de sortie sous client/dist
+      outDir: path.resolve(__dirname, "client", "dist"), // Publication dans client/dist
       emptyOutDir: true,
     },
   });
