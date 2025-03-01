@@ -28,9 +28,9 @@ export default async () => {
         "@shared": path.resolve(__dirname, "shared"),
       },
     },
-    root: path.resolve(__dirname, "client"),  // Le dossier racine "client"
+    root: path.resolve(__dirname, "client"),
     build: {
-      outDir: path.resolve(__dirname, "dist"),  // Dossier de sortie "dist"
+      outDir: path.resolve(__dirname, "client", "dist"),  // Répertoire de sortie vers client/dist
       emptyOutDir: true,
     },
     server: {
@@ -38,7 +38,7 @@ export default async () => {
         "/api": {
           target: "https://eternal-shadow-nexus-officiel.onrender.com",  // URL de ton backend
           changeOrigin: true,
-          secure: false,  // Utilisé si tu n'as pas de certificat SSL valide (change à `true` si tu as SSL)
+          secure: false,
         },
       },
     },
