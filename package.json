@@ -40,7 +40,7 @@
     "react-hook-form": "^7.54.2",
     "tailwind-merge": "^3.0.2",
     "tailwindcss-animate": "^1.0.7",
-    "wouter": "^3.6.0",
+    "wouter": "^2.10.0",
     "ws": "^8.18.1"
   },
   "devDependencies": {
