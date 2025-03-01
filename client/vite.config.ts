@@ -24,23 +24,23 @@ export default async () => {
     plugins,
     resolve: {
       alias: {
-        "@": path.resolve(__dirname, "src"),
+        "@": path.resolve(__dirname, "client", "src"),
         "@shared": path.resolve(__dirname, "shared"),
       },
     },
-    root: path.resolve(__dirname, "client"),
+    root: path.resolve(__dirname, "client"),  // Le dossier racine "client"
+    build: {
+      outDir: path.resolve(__dirname, "dist"),  // Dossier de sortie "dist"
+      emptyOutDir: true,
+    },
     server: {
       proxy: {
         "/api": {
-          target: "https://eternal-shadow-nexus-officiel.onrender.com", // URL du backend
+          target: "https://eternal-shadow-nexus-officiel.onrender.com",  // URL de ton backend
           changeOrigin: true,
-          secure: false,
+          secure: false,  // Utilisé si tu n'as pas de certificat SSL valide (change à `true` si tu as SSL)
         },
       },
-    },
-    build: {
-      outDir: path.resolve(__dirname, "client", "dist"), // Publication dans client/dist
-      emptyOutDir: true,
     },
   });
 };
