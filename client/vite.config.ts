@@ -39,7 +39,7 @@ export default async () => {
       },
     },
     build: {
-      outDir: path.resolve(__dirname, "dist"), // Correction pour éviter "client/dist"
+      outDir: path.resolve(__dirname, "client", "dist"), // Définit le dossier de sortie sous client/dist
       emptyOutDir: true,
     },
   });
