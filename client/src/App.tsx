@@ -3,8 +3,8 @@ import { queryClient } from "./lib/queryClient";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "./hooks/use-auth";
 import { useNotifications } from "./hooks/use-notifications";
-import ProtectedRoute from "./lib/protected-route";
-import { Route, Switch } from "wouter"; // Remplacement de useRoutes
+import { Route } from "wouter";
+import { ProtectedRoute } from "./lib/protected-route"; // Correction de l'importation
 
 // Importation des pages
 import HomePage from "@/pages/home-page";
@@ -22,17 +22,17 @@ function Router() {
   useNotifications();
 
   return (
-    <Switch>
+    <>
       <Route path="/auth" component={AuthPage} />
-      <Route path="/" component={() => <ProtectedRoute component={HomePage} />} />
-      <Route path="/profile" component={() => <ProtectedRoute component={ProfilePage} />} />
-      <Route path="/groups" component={() => <ProtectedRoute component={GroupsPage} />} />
-      <Route path="/badges" component={() => <ProtectedRoute component={BadgesPage} />} />
-      <Route path="/projects" component={() => <ProtectedRoute component={ProjectsPage} />} />
-      <Route path="/anime" component={() => <ProtectedRoute component={AnimePage} />} />
-      <Route path="/admin" component={() => <ProtectedRoute component={AdminPage} />} />
-      <Route component={NotFound} /> {/* Route par défaut pour les 404 */}
-    </Switch>
+      <Route path="/" component={() => <ProtectedRoute path="/" component={HomePage} />} />
+      <Route path="/profile" component={() => <ProtectedRoute path="/profile" component={ProfilePage} />} />
+      <Route path="/groups" component={() => <ProtectedRoute path="/groups" component={GroupsPage} />} />
+      <Route path="/badges" component={() => <ProtectedRoute path="/badges" component={BadgesPage} />} />
+      <Route path="/projects" component={() => <ProtectedRoute path="/projects" component={ProjectsPage} />} />
+      <Route path="/anime" component={() => <ProtectedRoute path="/anime" component={AnimePage} />} />
+      <Route path="/admin" component={() => <ProtectedRoute path="/admin" component={AdminPage} />} />
+      <Route path="*" component={NotFound} /> {/* Gère toutes les routes non définies */}
+    </>
   );
 }
 
