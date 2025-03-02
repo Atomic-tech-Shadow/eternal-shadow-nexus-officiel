@@ -1,18 +1,24 @@
 import express from "express";
-import path from "path";
+import cors from "cors";
+import dotenv from "dotenv";
+
+dotenv.config(); // Charge les variables d'environnement
 
 const app = express();
-const __dirname = path.resolve();
 
-// Servir les fichiers du frontend
-app.use(express.static(path.join(__dirname, "client", "dist")));
+// Middleware
+app.use(cors());
+app.use(express.json());
 
-// Renvoyer index.html pour toutes les routes non API
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "client", "dist", "index.html"));
+// Définir le port en utilisant la variable d'environnement ou 3000 par défaut
+const PORT = process.env.PORT || 3000;
+
+// Route de test
+app.get("/", (req, res) => {
+  res.send("🚀 Serveur en ligne !");
 });
 
-const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+// Démarrer le serveur
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`🚀 Serveur en cours d'exécution sur le port ${PORT}`);
 });
