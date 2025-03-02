@@ -35,6 +35,7 @@
     "firebase-admin": "^13.1.0",
     "formidable": "^3.5.2",
     "lucide-react": "^0.476.0",
+    "memorystore": "^1.6.7",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
     "react": "^18.3.1",
