@@ -4,11 +4,11 @@ import { setupAuth } from "./auth";
 import { storage } from "./storage";
 import { setupWebSocket } from "./websocket";
 import formidable from "formidable";
-import fs from "fs";
 import path from "path";
-import { isAuthenticated } from "./middlewares/auth"; // Ajout d’un middleware d’auth
+import { isAuthenticated } from "./middlewares/auth";
+import admin from "../firebaseAdmin"; // Import Firebase Admin SDK
 
-const storageClient = new Client();
+const bucket = admin.storage().bucket(); // Récupération du bucket Firebase
 
 export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
@@ -40,7 +40,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Upload de fichiers avec meilleure gestion d’erreur
+  // Upload de fichiers avec Firebase Storage
   app.post("/api/upload", isAuthenticated, async (req, res, next) => {
     try {
       const form = formidable({});
@@ -50,10 +50,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!file) return res.status(400).json({ error: "No file uploaded" });
 
       const fileExt = path.extname(file.originalFilename || "");
-      const fileName = `${Date.now()}${fileExt}`;
+      const fileName = `uploads/${Date.now()}${fileExt}`;
+      
+      // Upload du fichier sur Firebase Storage
+      await bucket.upload(file.filepath, {
+        destination: fileName,
+        public: true, // Rendre le fichier accessible publiquement
+      });
 
-      await storageClient.upload_file(fileName, file.filepath);
-      const url = await storageClient.get_signed_url(fileName);
+      const url = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
 
       const media = await storage.createMediaFile(
         req.user!.id,
