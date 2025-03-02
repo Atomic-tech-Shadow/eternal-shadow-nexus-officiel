@@ -3,7 +3,6 @@ import { createServer, type Server } from "http";
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
 import { setupWebSocket } from "./websocket";
-import { Client } from "@replit/object-storage";
 import formidable from "formidable";
 import fs from "fs";
 import path from "path";
