@@ -1,12 +1,17 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
-import path from "path";
+import cors from "cors";
 
 const app = express();
+const PORT = 5000; // Fixé à 5000 pour Render
+
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(cors()); // Autorise les requêtes cross-origin
 
+// Logger middleware pour suivre les requêtes API
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
@@ -25,11 +30,9 @@ app.use((req, res, next) => {
       if (capturedJsonResponse) {
         logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
       }
-
       if (logLine.length > 80) {
         logLine = logLine.slice(0, 79) + "…";
       }
-
       log(logLine);
     }
   });
@@ -38,37 +41,30 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  const server = await registerRoutes(app);
+  try {
+    const server = await registerRoutes(app);
 
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
-
-    res.status(status).json({ message });
-    throw err;
-  });
-
-  if (app.get("env") === "development") {
-    await setupVite(app, server);
-  } else {
-    // Servir les fichiers statiques du frontend
-    const frontendPath = path.join(__dirname, "client", "dist");
-    app.use(express.static(frontendPath));
-
-    // Route de fallback pour les routes frontend
-    app.get("*", (_req, res) => {
-      res.sendFile(path.join(frontendPath, "index.html"));
+    // Gestion des erreurs
+    app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+      const status = err.status || err.statusCode || 500;
+      const message = err.message || "Internal Server Error";
+      res.status(status).json({ message });
+      console.error(err);
     });
 
-    serveStatic(app);
-  }
+    // Setup Vite en développement
+    if (app.get("env") === "development") {
+      await setupVite(app, server);
+    } else {
+      serveStatic(app); // Serveur statique pour le frontend en production
+    }
 
-  const port = process.env.PORT || 5000;
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
-    log(`Server running on port ${port}`);
-  });
+    // Démarrage du serveur sur le port 5000
+    server.listen(PORT, "0.0.0.0", () => {
+      log(`🚀 Serveur démarré sur http://localhost:${PORT}`);
+    });
+
+  } catch (error) {
+    console.error("❌ Erreur lors du démarrage du serveur :", error);
+  }
 })();
