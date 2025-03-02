@@ -15,6 +15,7 @@ export default async () => {
     themePlugin(),
   ];
 
+  // Ajoute le plugin Cartographer uniquement en développement sur Replit
   if (process.env.NODE_ENV !== "production" && process.env.REPL_ID !== undefined) {
     const { cartographer } = await import("@replit/vite-plugin-cartographer");
     plugins.push(cartographer());
@@ -24,23 +25,23 @@ export default async () => {
     plugins,
     resolve: {
       alias: {
-        "@": path.resolve(__dirname, "client", "src"),
-        "@shared": path.resolve(__dirname, "shared"),
+        "@": path.resolve(__dirname, "src"),  // Corrige l’alias pour `src/`
+        "@shared": path.resolve(__dirname, "..", "shared"),  // Corrige l’alias pour `shared/`
       },
     },
-    root: path.resolve(__dirname, "client"),
+    root: __dirname,  // Définit la racine à `client/`
     build: {
-      outDir: path.resolve(__dirname, "client", "dist"), // Utilisation de "client/dist" pour la sortie
+      outDir: path.resolve(__dirname, "dist"), // Sortie dans "client/dist"
       emptyOutDir: true,
     },
     server: {
-      proxy: {
+      proxy: process.env.NODE_ENV === "development" ? {
         "/api": {
-          target: "https://eternal-shadow-nexus-officiel-1.onrender.com",  // URL du backend
+          target: "http://localhost:3000",  // En dev, le backend tourne localement
           changeOrigin: true,
           secure: false,
         },
-      },
+      } : undefined, // Désactive le proxy en production
     },
   });
 };
