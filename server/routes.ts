@@ -6,9 +6,9 @@ import { setupWebSocket } from "./websocket";
 import formidable from "formidable";
 import path from "path";
 import { isAuthenticated } from "./middlewares/auth";
-import admin from "../firebaseAdmin"; // Import Firebase Admin SDK
+import admin from "./firebaseAdmin"; // Correction de l'import
 
-const bucket = admin.storage().bucket(); // Récupération du bucket Firebase
+const bucket = admin.storage().bucket(); // Accès au bucket Firebase
 
 export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
@@ -43,22 +43,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Upload de fichiers avec Firebase Storage
   app.post("/api/upload", isAuthenticated, async (req, res, next) => {
     try {
-      const form = formidable({});
-      const [fields, files] = await form.parse(req);
-      const file = files.file?.[0];
+      const form = formidable({ multiples: false }); // Désactivation des multiples fichiers
+      const [fields, files] = await new Promise<[formidable.Fields, formidable.Files]>((resolve, reject) => {
+        form.parse(req, (err, fields, files) => {
+          if (err) reject(err);
+          else resolve([fields, files]);
+        });
+      });
 
+      const file = files.file?.[0];
       if (!file) return res.status(400).json({ error: "No file uploaded" });
 
       const fileExt = path.extname(file.originalFilename || "");
       const fileName = `uploads/${Date.now()}${fileExt}`;
-      
+
       // Upload du fichier sur Firebase Storage
       await bucket.upload(file.filepath, {
         destination: fileName,
-        public: true, // Rendre le fichier accessible publiquement
+        metadata: { contentType: file.mimetype || "application/octet-stream" },
       });
 
-      const url = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
+      // Génération d'une URL signée (valide 1 an)
+      const [url] = await bucket.file(fileName).getSignedUrl({
+        action: "read",
+        expires: Date.now() + 365 * 24 * 60 * 60 * 1000, // 1 an
+      });
 
       const media = await storage.createMediaFile(
         req.user!.id,
@@ -82,4 +91,4 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
   setupWebSocket(httpServer, app);
   return httpServer;
-}
+                                                                                       }
