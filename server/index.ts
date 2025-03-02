@@ -1,24 +1,18 @@
 import express from "express";
-import { createServer } from "http";
-import cors from "cors"; // Ajout de CORS
-import { setupWebSocket } from "./websocket";
-import { setupAuth } from "./auth";
+import path from "path";
 
 const app = express();
-const server = createServer(app);
+const __dirname = path.resolve();
 
-// 🔥 Autoriser le frontend à accéder au backend
-const FRONTEND_URL = "https://eternal-shadow-nexus-officiel-1.onrender.com";
-app.use(cors({ origin: FRONTEND_URL, credentials: true }));
+// Servir les fichiers du frontend
+app.use(express.static(path.join(__dirname, "client", "dist")));
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+// Renvoyer index.html pour toutes les routes non API
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "client", "dist", "index.html"));
+});
 
-setupAuth(app);
-setupWebSocket(server, app);
-
-const PORT = process.env.PORT || 3000;
-
-server.listen(PORT, () => {
+const PORT = process.env.PORT || 10000;
+app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
